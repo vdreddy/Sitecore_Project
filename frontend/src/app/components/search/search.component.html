@@ -1,0 +1,91 @@
+<div class="search-page">
+  <div class="card">
+    <h2 class="card-title">Customer Search</h2>
+
+    @if (error) {
+      <div class="alert alert-error">{{ error }}</div>
+    }
+
+    <div class="form-group">
+      <label for="searchType">Search By</label>
+      <select id="searchType" [(ngModel)]="searchType" (ngModelChange)="onReset()">
+        <option value="SSN_BIRTHYEAR">SSN &amp; Birth Year</option>
+        <option value="TAX_ID">Tax ID</option>
+        <option value="POLICY_NUMBER">Policy Number</option>
+        <option value="NAME_ADDRESS">Name &amp; Address</option>
+        <option value="USERNAME">Username</option>
+        <option value="EMAIL">Email Address</option>
+      </select>
+    </div>
+
+    @if (searchType === 'SSN_BIRTHYEAR') {
+      <div class="search-fields">
+        <div class="form-group">
+          <label for="ssn">SSN</label>
+          <input type="text" id="ssn" [(ngModel)]="ssn" placeholder="Enter SSN (e.g., 123-45-6789)">
+        </div>
+        <div class="form-group">
+          <label for="birthYear">Birth Year</label>
+          <input type="number" id="birthYear" [(ngModel)]="birthYear" placeholder="Enter birth year (e.g., 1985)">
+        </div>
+      </div>
+    }
+
+    @if (searchType === 'TAX_ID') {
+      <div class="form-group">
+        <label for="taxId">Tax ID</label>
+        <input type="text" id="taxId" [(ngModel)]="taxId" placeholder="Enter Tax ID">
+      </div>
+    }
+
+    @if (searchType === 'POLICY_NUMBER') {
+      <div class="form-group">
+        <label for="policyNumber">Policy Number</label>
+        <input type="text" id="policyNumber" [(ngModel)]="policyNumber" placeholder="Enter Policy Number">
+      </div>
+    }
+
+    @if (searchType === 'NAME_ADDRESS') {
+      <div class="search-fields">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" [(ngModel)]="firstName" placeholder="Enter first name">
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" [(ngModel)]="lastName" placeholder="Enter last name">
+        </div>
+        <div class="form-group full-width">
+          <label for="address">Address</label>
+          <input type="text" id="address" [(ngModel)]="address" placeholder="Enter address">
+        </div>
+      </div>
+    }
+
+    @if (searchType === 'USERNAME') {
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" [(ngModel)]="username" placeholder="Enter username">
+      </div>
+    }
+
+    @if (searchType === 'EMAIL') {
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" [(ngModel)]="email" placeholder="Enter email address">
+      </div>
+    }
+
+    <div class="form-actions">
+      <button class="btn btn-primary" (click)="onSearch()" [disabled]="!isSearchValid() || loading">
+        @if (loading) {
+          <span class="spinner"></span>
+        }
+        Search
+      </button>
+      <button class="btn btn-secondary" (click)="onReset()" [disabled]="loading">
+        Reset
+      </button>
+    </div>
+  </div>
+</div>
