@@ -36,8 +36,15 @@ public class CustomerService {
         List<Customer> customers;
         String searchType = request.getSearchType();
 
+        if (searchType == null) {
+            throw new RuntimeException("Search type is required");
+        }
+
         switch (searchType) {
             case "SSN_BIRTHYEAR":
+                if (request.getSsn() == null || request.getBirthYear() == null) {
+                    throw new RuntimeException("SSN and birth year are required for SSN_BIRTHYEAR search");
+                }
                 customers = customerRepository.findBySsnAndBirthYear(request.getSsn(), request.getBirthYear());
                 break;
             case "TAX_ID":
@@ -245,8 +252,14 @@ public class CustomerService {
     private String formatAddress(Customer customer) {
         StringBuilder sb = new StringBuilder();
         if (customer.getAddress() != null) sb.append(customer.getAddress());
-        if (customer.getCity() != null) sb.append(", ").append(customer.getCity());
-        if (customer.getState() != null) sb.append(", ").append(customer.getState());
+        if (customer.getCity() != null) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(customer.getCity());
+        }
+        if (customer.getState() != null) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(customer.getState());
+        }
         if (customer.getZip() != null) sb.append(" ").append(customer.getZip());
         return sb.toString();
     }
