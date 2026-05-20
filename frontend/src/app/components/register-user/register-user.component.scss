@@ -1,0 +1,24 @@
+.register-page {
+  max-width: 800px;
+  margin: 0 auto;
+
+  .section-header {
+    margin-bottom: 16px;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}

@@ -1,0 +1,47 @@
+<div class="results-page">
+  <div class="section-header">
+    <h2>Search Results ({{ results.length }})</h2>
+    <button class="btn btn-secondary btn-sm" (click)="backToSearch()">
+      &larr; Back to Search
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Policy Owner</th>
+            <th>Policy Number</th>
+            <th>Policy Status</th>
+            <th>Role</th>
+            <th>Address</th>
+            <th>Master ID</th>
+            <th>Username</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (result of results; track result.masterId + result.policyNumber) {
+            <tr class="clickable" (click)="viewCustomer(result.masterId)">
+              <td>{{ result.policyOwnerName }}</td>
+              <td>{{ result.policyNumber || '—' }}</td>
+              <td>
+                @if (result.policyStatus) {
+                  <span class="status-badge" [ngClass]="getStatusClass(result.policyStatus)">
+                    {{ result.policyStatus }}
+                  </span>
+                } @else {
+                  —
+                }
+              </td>
+              <td>{{ result.role || '—' }}</td>
+              <td>{{ result.address || '—' }}</td>
+              <td><code>{{ result.masterId }}</code></td>
+              <td>{{ result.username || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

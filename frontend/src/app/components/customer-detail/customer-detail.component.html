@@ -1,0 +1,299 @@
+@if (loading) {
+  <div class="loading-container">
+    <span class="spinner"></span>
+    Loading customer details...
+  </div>
+}
+
+@if (error) {
+  <div class="alert alert-error">{{ error }}</div>
+}
+
+@if (successMessage) {
+  <div class="alert alert-success">{{ successMessage }}</div>
+}
+
+@if (customer) {
+  <div class="detail-page">
+    <div class="section-header">
+      <h2>Customer Details</h2>
+      <div class="actions-bar">
+        <button class="btn btn-secondary btn-sm" (click)="backToSearch()">
+          &larr; Back to Search
+        </button>
+        @if (!customer.registered) {
+          <button class="btn btn-primary btn-sm" (click)="registerUser()">
+            Register User
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (customer.registered) {
+      <div class="admin-actions card">
+        <h3 class="card-title">Admin Actions</h3>
+        <div class="actions-bar">
+          <button class="btn btn-primary btn-sm" (click)="openEditProfile()" [disabled]="actionLoading">
+            Update Profile
+          </button>
+          @if (customer.userInfo.userStatus === 'DISABLED') {
+            <button class="btn btn-success btn-sm" (click)="enableUser()" [disabled]="actionLoading">
+              Enable User
+            </button>
+          } @else if (customer.userInfo.userStatus === 'ACTIVE') {
+            <button class="btn btn-warning btn-sm" (click)="openDisableDialog()" [disabled]="actionLoading">
+              Disable User
+            </button>
+          }
+          <button class="btn btn-danger btn-sm" (click)="openDeleteConfirm()" [disabled]="actionLoading">
+            Delete User
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Personal Information -->
+    <div class="card">
+      <h3 class="card-title">Personal Information</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="detail-label">Name</div>
+          <div class="detail-value">{{ customer.personalInfo.name }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Address</div>
+          <div class="detail-value">{{ customer.personalInfo.address || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">City</div>
+          <div class="detail-value">{{ customer.personalInfo.city || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">State</div>
+          <div class="detail-value">{{ customer.personalInfo.state || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">ZIP</div>
+          <div class="detail-value">{{ customer.personalInfo.zip || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Country</div>
+          <div class="detail-value">{{ customer.personalInfo.country || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Date of Birth</div>
+          <div class="detail-value">{{ customer.personalInfo.dateOfBirth || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">SSN</div>
+          <div class="detail-value">{{ customer.personalInfo.ssn || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Tax ID</div>
+          <div class="detail-value">{{ customer.personalInfo.taxId || '—' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Information -->
+    <div class="card">
+      <h3 class="card-title">User Information</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="detail-label">Master ID</div>
+          <div class="detail-value"><code>{{ customer.userInfo.masterId }}</code></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Username</div>
+          <div class="detail-value">{{ customer.userInfo.username || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Email</div>
+          <div class="detail-value">{{ customer.userInfo.email || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Mobile Number</div>
+          <div class="detail-value">{{ customer.userInfo.mobileNumber || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">User Status</div>
+          <div class="detail-value">
+            @if (customer.userInfo.userStatus) {
+              <span class="status-badge" [ngClass]="getStatusClass(customer.userInfo.userStatus)">
+                {{ customer.userInfo.userStatus }}
+              </span>
+            } @else {
+              —
+            }
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Disable Reason</div>
+          <div class="detail-value">{{ customer.userInfo.disableReason || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Creation Date</div>
+          <div class="detail-value">{{ customer.userInfo.creationDate || '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Last Login</div>
+          <div class="detail-value">{{ customer.userInfo.lastLoginDate || '—' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Policy Information -->
+    <div class="card">
+      <h3 class="card-title">Policy Information</h3>
+      @if (customer.policies.length === 0) {
+        <p class="no-data">No policies found.</p>
+      } @else {
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Policy Number</th>
+                <th>Status</th>
+                <th>Role</th>
+                <th>Type</th>
+                <th>Product</th>
+                <th>Issue Date</th>
+                <th>Portal Visibility</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (policy of customer.policies; track policy.policyNumber) {
+                <tr>
+                  <td>{{ policy.policyNumber }}</td>
+                  <td>
+                    <span class="status-badge" [ngClass]="getStatusClass(policy.policyStatus)">
+                      {{ policy.policyStatus }}
+                    </span>
+                  </td>
+                  <td>{{ policy.role }}</td>
+                  <td>{{ policy.policyType }}</td>
+                  <td>{{ policy.product }}</td>
+                  <td>{{ policy.issueDate }}</td>
+                  <td>{{ policy.portalVisibility ? 'Yes' : 'No' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+    <!-- Audit Logs -->
+    @if (auditLogs.length > 0) {
+      <div class="card">
+        <h3 class="card-title">Audit Trail</h3>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Action</th>
+                <th>Admin</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (log of auditLogs; track log.id) {
+                <tr>
+                  <td>{{ log.timestamp }}</td>
+                  <td><span class="action-badge">{{ log.action }}</span></td>
+                  <td>{{ log.adminUsername }}</td>
+                  <td>{{ log.details }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- Edit Profile Dialog -->
+    @if (showEditProfile) {
+      <div class="dialog-overlay" (click)="showEditProfile = false">
+        <div class="dialog" (click)="$event.stopPropagation()">
+          <h3>Update Profile</h3>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" [(ngModel)]="editProfile.phoneNumber">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="editProfile.email">
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" [(ngModel)]="editProfile.address">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" [(ngModel)]="editProfile.city">
+            </div>
+            <div class="form-group">
+              <label>State</label>
+              <input type="text" [(ngModel)]="editProfile.state">
+            </div>
+            <div class="form-group">
+              <label>ZIP</label>
+              <input type="text" [(ngModel)]="editProfile.zip">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Country</label>
+            <input type="text" [(ngModel)]="editProfile.country">
+          </div>
+          <div class="dialog-actions">
+            <button class="btn btn-primary" (click)="saveProfile()" [disabled]="actionLoading">
+              @if (actionLoading) { <span class="spinner"></span> }
+              Save
+            </button>
+            <button class="btn btn-secondary" (click)="showEditProfile = false">Cancel</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Disable User Dialog -->
+    @if (showDisableDialog) {
+      <div class="dialog-overlay" (click)="showDisableDialog = false">
+        <div class="dialog" (click)="$event.stopPropagation()">
+          <h3>Disable User</h3>
+          <p>Please provide a reason for disabling this user.</p>
+          <div class="form-group">
+            <label>Reason</label>
+            <input type="text" [(ngModel)]="disableReason" placeholder="Enter disable reason">
+          </div>
+          <div class="dialog-actions">
+            <button class="btn btn-warning" (click)="confirmDisable()" [disabled]="!disableReason || actionLoading">
+              @if (actionLoading) { <span class="spinner"></span> }
+              Disable
+            </button>
+            <button class="btn btn-secondary" (click)="showDisableDialog = false">Cancel</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Delete Confirm Dialog -->
+    @if (showDeleteConfirm) {
+      <div class="dialog-overlay" (click)="showDeleteConfirm = false">
+        <div class="dialog" (click)="$event.stopPropagation()">
+          <h3>Delete User</h3>
+          <p>Are you sure you want to delete this user? This action will remove their registration and cannot be undone.</p>
+          <div class="dialog-actions">
+            <button class="btn btn-danger" (click)="confirmDelete()" [disabled]="actionLoading">
+              @if (actionLoading) { <span class="spinner"></span> }
+              Delete
+            </button>
+            <button class="btn btn-secondary" (click)="showDeleteConfirm = false">Cancel</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}
